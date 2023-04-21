@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title%}
+{{ title }}
+{% endblock title %}
+
+{% block avatar%}
+{{ 'http://' }}{{ request.get_host }}{{ '/media/' }}{{ avatar }}
+{% endblock avatar %}
+
+
+{% block avatar-round%}
+{{ 'http://' }}{{ request.get_host }}{{ '/media/' }}{{ avatar }}
+{% endblock avatar-round %}
+
+
+{% block name%}
+{{ fullname }}
+{% endblock name %}
+
+
+{% block specialization%}
+{{ specialization }}
+{% endblock specialization %}
+
+
+
+{% block content%}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Attendance</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                <li class="breadcrumb-item active">Attendance</li>
+            </ul>
+        </div>
+        <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'cropface_students' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        {% csrf_token %}
+        <div class="text-center shadow-sm p-3 mb-3 bg-white rounded video_server">
+            <img src="{% url 'video-feed' %}" alt="" width="100%" class="video_feed">
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label>Môn Học</label>
+            <select class="form-control subject" name="subject" id="">
+                <option hidden></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Lớp Học</label>
+            <select class="form-control classname" name="classname">
+                <option hidden></option>
+            </select>
+        </div>
+        <div class="card ttsv" style="display: none;">
+            <div class="row g-0 align-items-center">
+                <div class="col-sm-3 col-4">
+                    <img src="{{ 'http://' }}{{ request.get_host }}{{ '/media/' }}video_stream/user.png" alt=""
+                        width="100%" class="face_detect">
+                </div>
+                <div class="col-sm-9 col-8">
+                    <div class="card-body text-left">
+                        <h5 class="text-left tsv" >#student_name</h5>
+                        <hr>
+                        <p class="mb-0"><strong class="pr-1">MSSV:</strong><span class="mssv"></span></p>
+                        <p class="mb-0"><strong class="pr-1">Lớp Học:</strong><span class="lh"></span></p>
+                        <p class="mb-0"><strong class="pr-1">Ngày Sinh:</strong><span class="ns"></span></p>
+                        <p class="mb-0"><strong class="pr-1">Giới Tính:</strong><span class="gt"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+
+    const BASE_URL = window.location
+
+    const host = "{{ request.get_host }}"
+
+    const media = 'http://' + host + '/media/'
+
+    var URL_VIDEO = "{% url 'video-feed' %}"
+    $(document).ready(function () {
+        $('.video_server').empty()
+        $('.video_server').append('<div class="spinner-grow text-primary" role="status"> <span class="sr-only">Loading...</span> </div> <div class="spinner-grow text-secondary" role="status"> <span class="sr-only">Loading...</span> </div> <div class="spinner-grow text-success" role="status"> <span class="sr-only">Loading...</span> </div> <div class="spinner-grow text-danger" role="status"> <span class="sr-only">Loading...</span> </div> <div class="spinner-grow text-warning" role="status"> <span class="sr-only">Loading...</span> </div> <div class="spinner-grow text-info" role="status"> <span class="sr-only">Loading...</span> </div>')
+        setTimeout(() => {
+            $('.video_server').empty()
+            $('.video_server').append('<img src="' + URL_VIDEO + '" alt="" width="100%" class="video_feed" >')
+        }, 4000);
+
+        setInterval(() => {
+            var csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+            var classname = localStorage.getItem("classname");
+            var subject = localStorage.getItem("subject");
+            subject = subject.split(",")[1]
+
+            $.post(BASE_URL, { csrfmiddlewaretoken: csrfmiddlewaretoken, classname: classname, subject: subject }, function (res) {
+                var data = res.data[0]
+
+                $(".ttsv").css("display", "unset");
+
+                $(".tsv").empty()
+                $(".tsv").text(data.fullname)
+
+                $(".mssv").empty()
+                $(".mssv").text(data.pk)
+
+                $(".lh").empty()
+                $(".lh").text(data.classname__name)
+
+                $(".ns").empty()
+                $(".ns").text(data.birthday)
+
+                $(".gt").empty()
+                $(".gt").text(data.gender == true ? "Nam" : "Nữ")
+
+                $(".face_detect").empty()
+                $(".face_detect").attr("src", media + data.avatar);
+                
+            })
+        }, 5000);
+
+        $('.classname').children('option').text(localStorage.getItem("classname_name"));
+        $('.subject').children('option').text(localStorage.getItem("subject_name"));
+    });
+
+    
+</script>
+{% endblock content %}

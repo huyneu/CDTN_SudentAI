@@ -1,0 +1,27 @@
+python manage.py runserver => khởi chạy server django
+địa chỉ server: 127.0.0.1:8000
+
+mở trình duyệt và truy cập vào địa chỉ trên
+
+nếu chưa đưang nhập:
+admin
+admin
+
+nếu đã đăng nhập thì sẽ tự động chuyển tới trang chủ
+
+thư viện:
+
+django: tạo web server
+keras: load model và thực hiện điểm danh thông qua data
+numpy: xử lý ảnh số trong quán trình dựu đoán khuân mặt điểm danh
+opencv-python: xử lý ảnh và thực hiện lấy cammera người dùng
+tensorflow: thư viện học máy
+
+xlwt: xuất excel
+
+Teachable Machine là một công cụ học máy giúp train dữ liệu nhanh và có 
+tính chính xác cao. Phát triển boi google
+
+
+
+http://127.0.0.1:8000/admin/attendance/attendanceinfo/6/change/
